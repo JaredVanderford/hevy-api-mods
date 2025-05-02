@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 await config();
 const { apikey: apiKey, baseUrl} = process.env;
-const kgMultiplier = 0.453;
+const kgMultiplier = 0.45359237;
 
 const apiCall = (route, body, method, headers) => {
     const options = {
