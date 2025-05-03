@@ -1,27 +1,55 @@
+const warmupSetType = 'warmup';
+const warmupExerciseTitle = 'Warm Up';
+
+const { kgMultiplier, useLbs } = process.env;
+
 export const updateRoutineExercises = (routine, latestWorkout) => 
-    routine.exercises.map(exercise => {
-        const { kgMultiplier, useLbs } = process.env;
-        if(exercise.title === 'Warm Up') return { ...exercise };
-        const {repRangeMax, repRangeMin, rest_seconds, weightIncrement} = getExerciseNotes(routine, exercise);
-        const exerciseOut = {...exercise, rest_seconds};    
-        const workoutExercise = latestWorkout.exercises.filter(workoutExercise => workoutExercise.title === exercise.title)[0];
-        if(workoutExercise === undefined) return {...exercise, rest_seconds};
-        const lastSet = workoutExercise.sets[workoutExercise.sets.length -1 ];
-        if(lastSet.reps >= repRangeMax) 
-            exerciseOut.sets = exerciseOut.sets.map(set => { return {
-                ...set,
-                reps:repRangeMin, 
-                weight_kg: lastSet.weight_kg + (weightIncrement * (useLbs !== undefined ? kgMultiplier : 1))
-            }});
-        else if (lastSet.reps >= repRangeMin && lastSet.reps >= exercise.sets[0].reps)
-            exerciseOut.sets = exerciseOut.sets.map(set => {
-                return {
-                    ...set,
-                    reps: lastSet.reps+1
-                };
-            });
-        return exerciseOut;
+    routine.exercises.map(routineExercise => {
+        const exerciseTilte = routineExercise.title;
+        if(exerciseTilte === warmupExerciseTitle) return { ...routineExercise };
+
+        const {repRangeMax, repRangeMin, rest_seconds, weightIncrement} = getExerciseNotes(routine, routineExercise);
+        const routineExerciseOut = {...routineExercise, rest_seconds};    
+        const latestWorkoutExercise = latestWorkout.exercises.filter(workoutExercise => workoutExercise.title === routineExercise.title)[0];
+        const routineTargetWeight = routineExercise.sets[0].weight_kg;
+        const routineTargetReps = routineExercise.sets.filter(set => set.type !== warmupSetType)[0].reps;
+        
+        if(latestWorkoutExercise === undefined) return {...routineExercise, rest_seconds};
+        
+        const { weight_kg: maxWeight, reps} = latestWorkoutExercise.sets[latestWorkoutExercise.sets.length -1 ];
+        const shouldIncreaseWeight = reps >= repRangeMax && maxWeight >= routineTargetWeight;
+        const shouldIncreaseReps = reps >= repRangeMin && 
+            (reps >= routineTargetReps || maxWeight > routineTargetWeight);
+
+        if(shouldIncreaseWeight) 
+            routineExerciseOut.sets = routineExerciseOut.sets.map(set => { 
+               return set.type === warmupSetType ?
+                    {
+                        ...set,
+                        weight_kg: warmupWeight(maxWeight)
+                    } :
+                    {
+                        ...set,
+                        reps, 
+                        weight_kg: calculateWeight(maxWeight, weightIncrement),
+                    };
+        });
+        else if (shouldIncreaseReps)
+            routineExerciseOut.sets = routineExerciseOut.sets.map(set => {
+                return set.type === warmupSetType ?
+                    set :
+                    {
+                        ...set,
+                        reps: reps+1,
+                        weight_kg: maxWeight,
+                    };
+        });
+
+        return routineExerciseOut;
     });
 
 const getExerciseNotes = (routine, exercise) => 
     JSON.parse(routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes);
+
+const calculateWeight = (weight_kg, increment = 0) => weight_kg + (increment * (useLbs !== undefined ? kgMultiplier : 1));
+const warmupWeight = (weight) => weight * .5;
