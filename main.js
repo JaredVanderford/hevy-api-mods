@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { progressiveOverloadJob } from './progressiveOverloadJob.js';
+import { progressiveOverloadJob } from './src/progressiveOverloadJob.js';
 import cron from 'node-cron';
 
 const runJob = async () => {
