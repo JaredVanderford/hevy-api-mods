@@ -2,7 +2,6 @@
 **.env
 **.env.*
 node_modules/**
-package-lock.json
 compose.yml
 
 #Add back .env.example
