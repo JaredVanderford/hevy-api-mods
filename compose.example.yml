@@ -1,0 +1,10 @@
+services: 
+  hevy-api-mods:
+    image: rullerr/heavy-api-mods:latest
+    environment:
+      #Get your API Key from https://hevy.com/settings?developer if you're a Hevy Pro User
+      API_KEY:
+      BASE_URL: "https://api.hevyapp.com/v1/"
+      SCHEUDLE: "0 1 * * *"
+      #USE_LBS: true
+

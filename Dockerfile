@@ -12,11 +12,8 @@ FROM node:${NODE_VERSION}-alpine
 
 # Use production node environment by default.
 ENV NODE_ENV=production
-ENV BASE_URL="https://api.hevyapp.com/v1/"
 ENV KG_MULTIPLIER=0.45359237
-# This schedule will run the job every day at 1 AM, delete schedule if you want to only run on demand
-ENV SCHEDULE="0 1 * * *"
-
+ENV BASE_URL="https://api.hevyapp.com/v1/"
 
 WORKDIR /usr/src/app
 
