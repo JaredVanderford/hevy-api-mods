@@ -23,3 +23,11 @@ The rep range is used to determine when to bump the weight for an exercise (if y
 ## Running the script
 
 Just copy the `.env.example` file to a `.env` file, and replace the API key and route with your API key and the current Hevy base route url.  Then run `npm start`.  If you did it right it should pull your last workout, and update the routine with the same name and console log the name of the updated routine.
+
+## Running as cron job
+
+In the `.env.example` there is variable for schedule.  This takes in the usual [cron pattern](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm) and will run the update job based on the schedule if present.  If there is no schedule present it will run once.
+
+## Running as docker container
+
+**TODO**
