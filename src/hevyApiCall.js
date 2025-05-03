@@ -1,5 +1,5 @@
 export const apiCall = (route, body, method, headers) => {
-    const { apiKey, baseUrl} = process.env;
+    const { API_KEY: apiKey, BASE_URL: baseUrl} = process.env;
     const options = {
         headers: {
             'api-key': apiKey,

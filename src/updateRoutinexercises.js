@@ -1,7 +1,7 @@
 const warmupSetType = 'warmup';
 const warmupExerciseTitle = 'Warm Up';
 
-const { kgMultiplier, useLbs } = process.env;
+const { KG_MULTIPLIER: kgMultiplier, USE_LBS: useLbs } = process.env;
 
 export const updateRoutineExercises = (routine, latestWorkout) => 
     routine.exercises.map(routineExercise => {
