@@ -1,0 +1,9 @@
+services: 
+  hevy-api-mods:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    env_file:
+      - ./.env
+

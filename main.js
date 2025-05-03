@@ -13,7 +13,7 @@ const runJob = async () => {
 
 await config();
 process.env.kgMultiplier = 0.45359237;
-const { schedule } = process.env;
+const { SCHEDULE: schedule } = process.env;
 if( schedule !== undefined){
     cron.schedule('0 1 * * *', async () => {
         console.log(`Running progressive overload job at ${new Date().toISOString()}`);
