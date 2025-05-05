@@ -21,7 +21,7 @@ export const progressiveOverloadJob = async () => {
         await putRoutine(updatedRoutine);
     }
     else {
-        printRoutine(routine, updatedRoutine);
+        printRoutine(routine, latestWorkout, updatedRoutine);
     }
     log(`${updatedRoutine.title} routine updated.`);
 };

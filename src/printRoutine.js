@@ -1,24 +1,25 @@
 import { log, logLevels } from "../log.js";
-import { calculateWeight } from "./weightCalcs.js";
+import { convertWeight } from "./weightCalcs.js";
 
-export const printRoutine = (oldRoutine, newRoutine) => {
+export const printRoutine = ({exercises: oldRoutineExercises}, {exercises: workoutExercises}, newRoutine) => {
     let message = `Routine Name: ${newRoutine.title}\n`;
     newRoutine.exercises.map(newExercise => {
-        message += `\t${newExercise.title}`;
-        const oldExerciseFind = oldRoutine.exercises.filter(exercise => exercise.title === newExercise.title);
-        if(oldExerciseFind.length > 0){
-            log(`Exercise not found in old routine: ${newExercise.title}`, logLevels.warn)
-            oldRoutine.exercises.forEach(exercise => console.log(exercise.title));
-        }else {
-            const oldExercise = oldExerciseFind[0];
-            newExercise.sets.forEach(({reps: newReps, weight_kg: newWeight }, index) => {
-                const {reps: oldReps, weight_kg: oldWeight} = oldExercise.set[index]
-                message += `\t\tOld Weight: ${calculateWeight(oldWeight)}
-\t\tNew Weight: ${newWeight}
-\t\tOld Reps: ${oldReps}
-\t\tNew Reps: ${newReps}`
-            });
-        }
+        message += `\t${newExercise.title}\n`;
+        const oldRoutineExerciseFind = oldRoutineExercises.filter(exercise => exercise.title === newExercise.title);
+        const workoutExerciseFind = workoutExercises.filter(exercise => exercise.title === newExercise.title);
+        const workoutExercise = workoutExerciseFind[0];
+        newExercise.sets.forEach(({reps: newReps, weight_kg: newWeight }, index) => {
+            message += `\t\tSet ${index+1}\n`;
+            if(oldRoutineExerciseFind.length > 0) {
+                const {reps: oldReps, weight_kg: oldWeight } = oldRoutineExerciseFind[0].sets[index];
+                message += `\t\t\tOld Weight: ${convertWeight(oldWeight)}\t\tOld Reps: ${oldReps}\n`;
+            }
+            if(workoutExerciseFind.length > 0) {
+                const {reps: workoutReps, weight_kg: workoutWeight} = workoutExercise.sets[index];
+                message += `\t\t\tWorkout Weight: ${convertWeight(workoutWeight)}\tWorkout Reps: ${workoutReps}\n`;
+            }
+            message += `\t\t\tNew Weight: ${convertWeight(newWeight)}\t\tNew Reps: ${newReps}\n`;
+        });
     })
     log(message, logLevels.info);
 };
