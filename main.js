@@ -1,6 +1,8 @@
 import { config } from 'dotenv';
 import { progressiveOverloadJob } from './src/progressiveOverloadJob.js';
 import cron from 'node-cron';
+
+await config();
 let isErrored = false;
 if(process.env.API_KEY === undefined) {
     console.error('Your API_KEY is missing, please provide the Hevy API Key for you user to use this script.');
@@ -23,7 +25,6 @@ const runJob = async () => {
     }
 }
 
-await config();
 process.env.kgMultiplier = 0.45359237;
 const { SCHEDULE: schedule } = process.env;
 if( schedule !== undefined){
