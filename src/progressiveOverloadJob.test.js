@@ -54,7 +54,7 @@ describe('progressiveOverloadJob', async () => {
 
         await progressiveOverloadJob();
 
-        expect(printRoutineSpy).toHaveBeenCalledWith(mockRoutine, mockUpdatedRoutine);
+        expect(printRoutineSpy).toHaveBeenCalledWith(mockRoutine, mockWorkout, mockUpdatedRoutine);
         expect(putRoutineSpy).not.toHaveBeenCalled();
     });
 

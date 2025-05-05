@@ -1,5 +1,5 @@
-import { afterEach, assert, beforeAll, beforeEach, describe, it, vi } from "vitest";
-import { calculateWeight, warmupWeight } from "./weightCalcs";
+import { afterEach, assert, beforeEach, describe, it, vi } from "vitest";
+import { calculateWeight, formatWeight, warmupWeight } from "./weightCalcs";
 
 const kgMultiplier = 0.45359237
 
@@ -14,7 +14,7 @@ describe('weightCalcs', () => {
     describe("calculateWeight", () => {
         it("adds the expected increment in lbs when USE_LBS is set", () => {
             vi.stubEnv('USE_LBS', true);
-            assert.equal(calculateWeight(1,1), 1+kgMultiplier);
+            assert.equal(calculateWeight(1,1), formatWeight(1+kgMultiplier));
         });
 
         it("adds the expected increment in kgs when USE_LBS is not set", () => {
