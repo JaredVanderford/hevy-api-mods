@@ -1,7 +1,7 @@
+import { calculateWeight, warmupWeight } from "./weightCalcs.js";
+
 const warmupSetType = 'warmup';
 const warmupExerciseTitle = 'Warm Up';
-
-const { KG_MULTIPLIER: kgMultiplier, USE_LBS: useLbs } = process.env;
 
 export const updateRoutineExercises = (routine, latestWorkout) => 
     routine.exercises.map(routineExercise => {
@@ -50,6 +50,3 @@ export const updateRoutineExercises = (routine, latestWorkout) =>
 
 const getExerciseNotes = (routine, exercise) => 
     JSON.parse(routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes);
-
-const calculateWeight = (weight_kg, increment = 0) => weight_kg + (increment * (useLbs !== undefined ? kgMultiplier : 1));
-const warmupWeight = (weight) => weight * .5;

@@ -1,7 +1,9 @@
+import { log } from "../log.js";
 import { fetchLatestWorkout } from "./fetchLatestWorkout.js";
 import { fetchNamedRoutine } from "./fetchNamedRoutine.js";
-import { updateRoutineExercises } from "./updateRoutinexercises.js";
+import { printRoutine } from "./printRoutine.js";
 import { putRoutine } from "./putRoutine.js";
+import { updateRoutineExercises } from "./updateRoutineExercises.js";
 
 export const progressiveOverloadJob = async () => {
 
@@ -15,6 +17,12 @@ export const progressiveOverloadJob = async () => {
         exercises: updatedRoutineExercises,
     };
 
-    await putRoutine(updatedRoutine);
-    console.log(`${updatedRoutine.title} routine updated.`);
+    if(process.env.DEBUG === undefined) {
+        await putRoutine(updatedRoutine);
+    }
+    else {
+        printRoutine(routine, updatedRoutine);
+    }
+    log(`${updatedRoutine.title} routine updated.`);
 };
+
