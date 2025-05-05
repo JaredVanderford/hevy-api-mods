@@ -3,6 +3,7 @@
 **.env.*
 node_modules/**
 compose.yml
+coverage/**
 
 #Add back .env.example
 !**.env.example
