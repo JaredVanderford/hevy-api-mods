@@ -13,14 +13,7 @@ export const updateRoutineExercises = (routine, latestWorkout) =>
         const latestWorkoutExercise = latestWorkout.exercises.filter(workoutExercise => workoutExercise.title === routineExercise.title)[0];
         const setCount = routineExercise.sets.length;
         const { reps: routineTargetReps, weight_kg: routineTargetWeight } = routineExercise.sets[setCount-1];
-        /*
-        Logic:
-          If the exercise is not in the workout, output the routine exercise
-          If the last set was not at or above the reps and weight suggested in the routine, output the routine exercise
-          If the last set was at or below the max in the notes, add a rep to the last set's rep count for all sets.
-          Otherwise output an exercise with sets at the minumum reps and with increased weight by the increment
-        */
-        
+                
         if(latestWorkoutExercise === undefined) return routineExerciseOut;
         
         const { weight_kg: lastSetWeight, reps: lastSetReps} = latestWorkoutExercise.sets[latestWorkoutExercise.sets.length -1 ];
