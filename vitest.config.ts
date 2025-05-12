@@ -5,7 +5,7 @@ export default defineConfig({
     exclude: ['node_modules', 'main.js'],
     coverage: {
         reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules', 'main.js', 'vitest.config.ts', 'src/printRoutine.js'],
+        exclude: ['node_modules', 'main.js', 'log.js', 'vitest.config.ts', 'src/printRoutine.js'],
       },
     
   },

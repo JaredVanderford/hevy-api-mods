@@ -1,3 +1,4 @@
+import { log, logLevels } from "../log.js";
 import { calculateWeight, formatWeight, warmupWeight } from "./weightCalcs.js";
 
 const warmupSetType = 'warmup';
@@ -21,32 +22,44 @@ export const updateRoutineExercises = (routine, latestWorkout) =>
         const shouldIncreaseWeight = shouldOverload && lastSetReps >= repRangeMax;
         const shouldIncreaseReps = shouldOverload && lastSetReps < repRangeMax;
 
-        if(shouldIncreaseWeight) 
-            routineExerciseOut.sets = routineExerciseOut.sets.map(set => { 
-               return set.type === warmupSetType ?
-                    {
-                        ...set,
-                        weight_kg: warmupWeight(lastSetWeight)
-                    } :
-                    {
-                        ...set,
-                        reps: repRangeMin, 
-                        weight_kg: calculateWeight(lastSetWeight, weightIncrement),
-                    };
-        });
-        else if (shouldIncreaseReps)
-            routineExerciseOut.sets = routineExerciseOut.sets.map(set => {
-                return set.type === warmupSetType ?
-                    set :
-                    {
-                        ...set,
-                        reps: lastSetReps+1,
-                        weight_kg: lastSetWeight,
-                    };
-        });
-
+        
+        if(shouldIncreaseWeight) routineExerciseOut.sets = increaseExerciseWeight(routineExercise, Math.max(lastSetWeight, routineTargetWeight), weightIncrement, repRangeMin);
+        else if (shouldIncreaseReps) routineExerciseOut.sets = increaseExerciseReps(routineExercise, Math.max(lastSetReps, routineTargetReps), Math.max(lastSetWeight, routineTargetWeight));
+        if(process.env.DEBUG && shouldOverload) {
+            const message = `Exercise found to need overloading: ${routineExercise.title}
+\tMin Reps: ${repRangeMin}\tMax Reps: ${repRangeMax}\tIncrement: ${weightIncrement}
+\tOld Routine---- Reps: ${routineTargetReps}\tWeight: ${formatWeight(routineTargetWeight)}
+\tWorkout ---- Reps: ${lastSetReps}\tWeight: ${lastSetWeight}
+\tNew Routine ---- Reps: ${routineExerciseOut.sets[setCount-1].reps}\tWeight: ${formatWeight(routineExerciseOut.sets[setCount-1].weight_kg)}\n`;
+            log(message,logLevels.DEBUG);
+        }
         return routineExerciseOut;
     });
 
 const getExerciseNotes = (routine, exercise) => 
     JSON.parse(routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes);
+
+export const increaseExerciseWeight = (exercise, baseWeight, increment, repRangeMin) => 
+    exercise.sets.map(set =>
+        set.type === warmupSetType ?
+            {
+                ...set,
+                weight_kg: warmupWeight(baseWeight)
+            } :
+            {
+                ...set,
+                reps: repRangeMin, 
+                weight_kg: calculateWeight(baseWeight, increment),
+            }
+    );
+
+export const increaseExerciseReps = (exercise, baseReps, baseWeight) =>
+    exercise.sets.map(set => 
+        set.type === warmupSetType ?
+            set :
+            {
+                ...set,
+                reps: baseReps+1,
+                weight_kg: baseWeight,
+            }
+    );

@@ -1,4 +1,6 @@
-export const apiCall = (route, body, method, headers) => {
+import { fileLog } from '../log.js';
+
+export const apiCall = async (route, body, method, headers) => {
     const { API_KEY: apiKey, BASE_URL: baseUrl} = process.env;
     const options = {
         headers: {
@@ -14,6 +16,7 @@ export const apiCall = (route, body, method, headers) => {
         };
     if(body !== null)
         options.body = JSON.stringify(body);
-    return fetch(`${baseUrl}${route}`, options,
-    );
+
+    await fileLog(route, body, method);
+    return fetch(`${baseUrl}${route}`, options);
 };
