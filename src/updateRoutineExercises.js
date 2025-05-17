@@ -39,8 +39,11 @@ export const updateRoutineExercises = (routine, latestWorkout) =>
 const getExerciseNotes = (routine, exercise) => 
     JSON.parse(routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes);
 
-export const increaseExerciseWeight = (exercise, baseWeight, increment, repRangeMin) => 
-    exercise.sets.map(set =>
+export const increaseExerciseWeight = (exercise, baseWeight, increment, repRangeMin) => {
+    if(!process.env.DEBUG){
+        log(`Increasing weight on ${exercise.title}`, logLevels.info);
+    }
+    return exercise.sets.map(set =>
         set.type === warmupSetType ?
             {
                 ...set,
@@ -52,9 +55,13 @@ export const increaseExerciseWeight = (exercise, baseWeight, increment, repRange
                 weight_kg: calculateWeight(baseWeight, increment),
             }
     );
+}
 
-export const increaseExerciseReps = (exercise, baseReps, baseWeight) =>
-    exercise.sets.map(set => 
+export const increaseExerciseReps = (exercise, baseReps, baseWeight) => {
+    if(!process.env.DEBUG){
+        log(`Increasing reps on ${exercise.title}`, logLevels.info);
+    }
+    return exercise.sets.map(set => 
         set.type === warmupSetType ?
             set :
             {
@@ -63,3 +70,4 @@ export const increaseExerciseReps = (exercise, baseReps, baseWeight) =>
                 weight_kg: baseWeight,
             }
     );
+}
