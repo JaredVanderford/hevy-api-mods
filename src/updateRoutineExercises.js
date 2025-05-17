@@ -1,5 +1,6 @@
 import { log, logLevels } from "../log.js";
 import { calculateWeight, formatWeight, warmupWeight } from "./weightCalcs.js";
+import defaulOverload from './defaultOverload.json' with { type: "json" };
 
 const warmupSetType = 'warmup';
 const warmupExerciseTitle = 'Warm Up';
@@ -36,8 +37,25 @@ export const updateRoutineExercises = (routine, latestWorkout) =>
         return routineExerciseOut;
     });
 
-const getExerciseNotes = (routine, exercise) => 
-    JSON.parse(routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes);
+export const getExerciseNotes = (routine, exercise) => {
+    const notes = routine.exercises.filter(routineExercise => routineExercise.title === exercise.title)[0].notes;
+    let notesJson = {};
+    try {
+        notesJson = JSON.parse(notes);
+    }
+    finally{
+        return overWriteDefault(notesJson);
+    }
+};
+
+const overWriteDefault = (override) => {
+    return {
+        repRangeMax: override.repRangeMax ?? defaulOverload.repRangeMax,
+        repRangeMin: override.repRangeMin ?? defaulOverload.repRangeMin,
+        rest_seconds: override.rest_seconds ?? defaulOverload.rest_seconds,
+        weightIncrement: override.weightIncrement ?? defaulOverload.weightIncrement
+    };
+}
 
 export const increaseExerciseWeight = (exercise, baseWeight, increment, repRangeMin) => {
     if(!process.env.DEBUG){

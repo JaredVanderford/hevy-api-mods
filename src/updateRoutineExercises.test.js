@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { updateRoutineExercises } from "./updateRoutineExercises.js";
+import { updateRoutineExercises, getExerciseNotes } from "./updateRoutineExercises.js";
+import defaultOverload from './defaultOverload.json' with { type: "json" };
+import mod from "@vitest/coverage-v8";
 
 // Mock the weightCalcs functions
 vi.mock("./weightCalcs.js", () => ({
@@ -35,7 +37,17 @@ const baseRoutine = {
     },
   ],
 };
-
+const modifyNotes = (notes) => {
+  return {
+    ...baseRoutine,
+    exercises: [
+      {
+        ...baseRoutine.exercises[0],
+        notes
+      }
+    ]
+  };
+};
 describe("updateRoutineExercises", () => {
   it("returns routine exercise unchanged if not in latest workout", () => {
     const latestWorkout = { exercises: [] };
@@ -147,4 +159,25 @@ describe("updateRoutineExercises", () => {
     expect(updated[0].sets[1].weight_kg).toBe(62.5);
     expect(updated[0].sets[1].reps).toBe(5);
   });
+
+  
+  it.each([
+    [modifyNotes(""), defaultOverload],
+    [modifyNotes(JSON.stringify({repRangeMax: 15})), {...defaultOverload, repRangeMax: 15}],
+    [modifyNotes(JSON.stringify({repRangeMin: 4})), {...defaultOverload, repRangeMin: 4}],
+    [modifyNotes(JSON.stringify({rest_seconds: 180})), {...defaultOverload, rest_seconds: 180}],
+    [modifyNotes(JSON.stringify({weightIncrement: 15})), {...defaultOverload, weightIncrement: 15}],
+    [baseRoutine, JSON.parse(baseRoutine.exercises[0].notes)]
+  ])(
+    "returns default overload when no notes on exercise", (routine, result) => {
+    const testExercise = {
+      title: "Bench Press",
+      sets: [
+        { type: "warmup", reps: 10, weight_kg: 20 },
+        { type: "work", reps: 8, weight_kg: 60 },
+      ]
+    };
+    const notes = getExerciseNotes(routine, testExercise);
+    expect(notes).toStrictEqual(result);
+  })
 });
