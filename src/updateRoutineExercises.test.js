@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach, test } from "vitest";
 import { updateRoutineExercises, getExerciseNotes } from "./updateRoutineExercises.js";
-import defaultOverload from './defaultOverload.json' with { type: "json" };
-import mod from "@vitest/coverage-v8";
+import { getDefaults } from './defaultOverload.js';
 
 // Mock the weightCalcs functions
 vi.mock("./weightCalcs.js", () => ({
@@ -49,6 +48,15 @@ const modifyNotes = (notes) => {
   };
 };
 describe("updateRoutineExercises", () => {
+  afterEach(() => {
+    process.env = {
+      ...process.env,
+      DEFAULT_REP_MAX:undefined,
+      DEFAULT_REP_MIN: undefined, 
+      DEFAULT_REST_SECONDS: undefined,
+      DEFAULT_WEIGHT_INCREMENT: undefined  };
+  });
+
   it("returns routine exercise unchanged if not in latest workout", () => {
     const latestWorkout = { exercises: [] };
     const updated = updateRoutineExercises(baseRoutine, latestWorkout);
@@ -162,14 +170,14 @@ describe("updateRoutineExercises", () => {
 
   
   it.each([
-    [modifyNotes(""), defaultOverload],
-    [modifyNotes(JSON.stringify({repRangeMax: 15})), {...defaultOverload, repRangeMax: 15}],
-    [modifyNotes(JSON.stringify({repRangeMin: 4})), {...defaultOverload, repRangeMin: 4}],
-    [modifyNotes(JSON.stringify({rest_seconds: 180})), {...defaultOverload, rest_seconds: 180}],
-    [modifyNotes(JSON.stringify({weightIncrement: 15})), {...defaultOverload, weightIncrement: 15}],
+    [modifyNotes(""), getDefaults()],
+    [modifyNotes(JSON.stringify({repRangeMax: 15})), {...getDefaults(), repRangeMax: 15}],
+    [modifyNotes(JSON.stringify({repRangeMin: 4})), {...getDefaults(), repRangeMin: 4}],
+    [modifyNotes(JSON.stringify({rest_seconds: 180})), {...getDefaults(), rest_seconds: 180}],
+    [modifyNotes(JSON.stringify({weightIncrement: 15})), {...getDefaults(), weightIncrement: 15}],
     [baseRoutine, JSON.parse(baseRoutine.exercises[0].notes)]
   ])(
-    "returns default overload when no notes on exercise", (routine, result) => {
+    "returns default overload when notes missing values on exercise", (routine, result) => {
     const testExercise = {
       title: "Bench Press",
       sets: [
@@ -179,5 +187,35 @@ describe("updateRoutineExercises", () => {
     };
     const notes = getExerciseNotes(routine, testExercise);
     expect(notes).toStrictEqual(result);
+  })
+
+  it('returns default overload from process.env when defined', () => {
+    const testProcessValues = {
+      DEFAULT_REP_MAX: 3,
+      DEFAULT_REP_MIN: 1, 
+      DEFAULT_REST_SECONDS: 10,
+      DEFAULT_WEIGHT_INCREMENT: 20  };
+    process.env = {
+      ...process.env,
+      ...testProcessValues
+    };
+    const expectedDefaults = {
+      repRangeMax: 3,
+      repRangeMin: 1,
+      rest_seconds: 10,
+      weightIncrement: 20
+    };
+    const testExercise = {
+      title: "Bench Press",
+      sets: [
+        { type: "warmup", reps: 10, weight_kg: 20 },
+        { type: "work", reps: 8, weight_kg: 60 },
+      ]
+    };
+    const testRoutine = modifyNotes(undefined);
+
+    const notes = getExerciseNotes(testRoutine, testExercise);
+
+    expect(notes).toStrictEqual(expectedDefaults);
   })
 });

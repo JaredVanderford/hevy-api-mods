@@ -19,7 +19,7 @@ export const logLevels = {
 };
 
 export const fileLog = async (route, body, method) => {
-    const logsDir = './logs';
+    const logsDir = process.env.LOG_DIRECTORY ?? '/logs';
     const today = new Date().toISOString().split('T')[0];
     const logFile = path.join(logsDir, `${today}.json`);
     

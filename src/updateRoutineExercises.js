@@ -1,6 +1,6 @@
 import { log, logLevels } from "../log.js";
 import { calculateWeight, formatWeight, warmupWeight } from "./weightCalcs.js";
-import defaulOverload from './defaultOverload.json' with { type: "json" };
+import { getDefaults } from './defaultOverload.js';
 
 const warmupSetType = 'warmup';
 const warmupExerciseTitle = 'Warm Up';
@@ -49,6 +49,7 @@ export const getExerciseNotes = (routine, exercise) => {
 };
 
 const overWriteDefault = (override) => {
+    const defaulOverload = getDefaults();
     return {
         repRangeMax: override.repRangeMax ?? defaulOverload.repRangeMax,
         repRangeMin: override.repRangeMin ?? defaulOverload.repRangeMin,
