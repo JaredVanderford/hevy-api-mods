@@ -1,7 +1,8 @@
 import { fileLog } from '../log.js';
 
 export const apiCall = async (route, body, method, headers) => {
-    const { API_KEY: apiKey, BASE_URL: baseUrl} = process.env;
+    const { API_KEY: apiKey, BASE_URL} = process.env;
+    const baseUrl = BASE_URL ?? 'https://api.hevyapp.com/v1/';
     const options = {
         headers: {
             'api-key': apiKey,

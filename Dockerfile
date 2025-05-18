@@ -26,10 +26,6 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
-# Give access to logs directory for node
-RUN chown node:node /logs
-RUN chmod 777 /logs
-    
 # Run the application as a non-root user.
 USER node
 

@@ -4,7 +4,10 @@ services:
     environment:
       #Get your API Key from https://hevy.com/settings?developer if you're a Hevy Pro User
       API_KEY:
+      #Optional added so that it can be updated if Hevy updates the api url
       BASE_URL: "https://api.hevyapp.com/v1/"
       SCHEUDLE: "0 1 * * *"
+      #Optional enable if you want to use LBS instead of Kgs in Hevy
       #USE_LBS: true
-
+    volumes:
+      - ${LogsDirectory}:/logs
